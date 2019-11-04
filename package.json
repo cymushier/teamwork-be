@@ -4,7 +4,9 @@
   "description": "Backend for Teamwork, an application to allow workmates to share content",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "lint": "./node_modules/.bin/eslint --ignore-path .gitignore .",
+    "clean": "./node_modules/.bin/eslint --fix --ignore-path .gitignore ."
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,9 @@
   },
   "homepage": "https://github.com/cymushier/teamwork-be#readme",
   "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
     "jasmine": "^3.5.0"
   },
   "dependencies": {
