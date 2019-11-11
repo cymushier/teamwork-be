@@ -1,4 +1,5 @@
 const modelBase = require('./models/base-model');
+const bcrypt = require('bcrypt');
 
 const ALL_TABLES = ['users', 'posts', 'comments', 'tags', 'post_tags'];
 
@@ -76,6 +77,7 @@ const createTables = () => {
     // Error exceptions intentionally left to propagate
     modelBase.execute(allSchemas, (result) => {
         console.log(`Executed all schema creation successfully: ${result.rowCount}`);
+        return;
     });
 }
 
@@ -83,9 +85,35 @@ const dropTables = () => {
     // Error exceptions intentionally left to propagate
     modelBase.execute(`DROP TABLE IF EXISTS ${ALL_TABLES.join(',')} CASCADE;`, (result) => {
         console.log(`Executed all schema deletion successfully: ${result.rowCount}`);
+        return;
     });
 }
 
-module.exports = { createTables, dropTables };
+/**
+ * To seed the default user (admin) required to login necessarily.
+ */
+const createDefaultUser = () => {
+    const adminEmail = 'admin@example.com';
+    const adminPass = 'pass123$';
+    modelBase.execute(`SELECT COUNT(id) AS admins FROM users WHERE email=$1;`, (result) => {
+        if (result.rows) {
+            if (result.rows.length > 0 && result.rows[0].admins > 0) {
+                console.log(`There already exists an admin user.`);
+                return;
+            }
+        }
+        // Time to create a new user. [admin@example.com, pass123$]
+        bcrypt.hash(adminPass, 10).then(hash => {
+            const createScript = `INSERT INTO users(email, first_name, last_name, job_role, password)
+            VALUES('${adminEmail}', 'Admin', 'Default', 'admin', '${hash}');`;
+            modelBase.execute(createScript, (result) => {
+                console.log(`Successfully created default admin. Email: ${adminEmail} | Password: ${adminPass}`);
+                return;
+            });
+        });
+    }, [adminEmail]);
+}
+
+module.exports = { createTables, dropTables, createDefaultUser };
 
 require('make-runnable');

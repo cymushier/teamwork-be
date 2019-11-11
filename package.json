@@ -9,7 +9,8 @@
     "clean": "./node_modules/.bin/eslint --fix --ignore-path .gitignore .",
     "start": "node index.js",
     "create": "node ./shell createTables",
-    "destroy": "node ./shell dropTables"
+    "destroy": "node ./shell dropTables",
+    "seeduser": "node ./shell createDefaultUser"
   },
   "repository": {
     "type": "git",
