@@ -114,6 +114,22 @@ const createDefaultUser = () => {
     }, [adminEmail]);
 }
 
-module.exports = { createTables, dropTables, createDefaultUser };
+/**
+ * To delete the default user (admin) required to login necessarily.
+ */
+const deleteDefaultUser = () => {
+    const adminEmail = 'admin@example.com';
+    modelBase.execute(`DELETE FROM users WHERE email=$1;`, (result) => {
+        if (result.rowCount) {
+            if (result.rowCount > 0) {
+                console.log(`Successfully deleted default admin user.`);
+                return;
+            }
+        }
+        console.log(`Failed to delete the default admin user.`);
+    }, [adminEmail]);
+}
+
+module.exports = { createTables, dropTables, createDefaultUser, deleteDefaultUser };
 
 require('make-runnable');
