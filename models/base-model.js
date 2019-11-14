@@ -1,7 +1,7 @@
 const pool = require('./pool-manager');
 
 /**
- * Execute raw SQL query against the database and return raw result object.
+ * Execute raw `SQL` query against the database and return raw result object.
  * @param query The raw query string.
  * @param callback The callback to called with the results.
  * @param params Any parameters to pass to the query.

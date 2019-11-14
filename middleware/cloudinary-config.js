@@ -13,7 +13,7 @@ cloudinary.config({
 module.exports = (req, res, next) => {
     if (req.files.image.ws.bytesWritten > 0) {
         cloudinary.uploader.upload(req.files.image.path, { tags: 'teamwork_be' })
-            .then(function (image) {
+            .then(image => {
                 req.body.imageUrl = image.url;
                 next();
             })
