@@ -5,15 +5,17 @@ module.exports = (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
     const role = decodedToken.jobRole;
-    const userId = decodedToken.userId;
-    if (role === 'admin' && req.body.userId === userId) {
-      next();
-    } else {
+    if (role !== 'admin') {
       throw 'Permission Denied';
+    } else {
+      next();
     }
   } catch {
     res.status(403).json({
-      error: new Error('You are not authorized to view this content!')
+      status: "failed",
+      data: {
+        message: "Permission Denied. You are not allowed to perform this action."
+      }
     });
   }
 };
