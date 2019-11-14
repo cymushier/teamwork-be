@@ -1,20 +1,20 @@
 const jwt = require('jsonwebtoken');
 
-module.exports = function (req, res, next) {
+module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-    const userId = decodedToken.userId;
-    if (req.body.userId === userId) {
-      next();
+    const role = decodedToken.jobRole;
+    if (role !== 'admin') {
+      throw 'Permission Denied';
     } else {
-      throw 'Invalid user';
+      next();
     }
   } catch {
-    res.status(401).json({
+    res.status(403).json({
       status: "failed",
       data: {
-        message: "Authorization failed. Invalid user."
+        message: "Permission Denied. You are not allowed to perform this action."
       }
     });
   }

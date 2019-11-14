@@ -1,5 +1,5 @@
-const modelBase = require('./models/base-model');
 const bcrypt = require('bcrypt');
+const modelBase = require('./models/base-model');
 
 const ALL_TABLES = ['users', 'posts', 'comments', 'tags', 'post_tags'];
 

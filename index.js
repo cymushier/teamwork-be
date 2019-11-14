@@ -40,11 +40,17 @@ const errorHandler = (error) => {
   }
 };
 
+// Server Events
 server.on('error', errorHandler);
 server.on('listening', () => {
   const address = server.address();
   const bind = typeof address === 'string' ? `pipe ${address}` : `port ${port}`;
-  console.log(`Listening on ${bind}`);
+  console.log(`\nListening on ${bind}`);
+});
+server.on('close', () => {
+  console.log(`\n\nShutting down the server...`);
 });
 
 server.listen(port);
+
+module.exports = server;
