@@ -57,6 +57,13 @@ exports.createUser = (req, res) => {
                 }
             });
         }
-    }
-    );
+    }).catch(error => {
+        console.log(`Bcyrpt Exception: ${error}`);
+        res.status(500).json({
+            status: "failed",
+            data: {
+                message: "Internal server error"
+            }
+        });
+    });
 };

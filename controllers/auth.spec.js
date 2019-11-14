@@ -31,5 +31,18 @@ describe("Auth Controller", () => {
                 done();
             });
         });
+
+        it("Authorized. Should Return 400", (done) => {
+            const jwt = require('jsonwebtoken');
+            const token = jwt.sign({ userId: 1, jobRole: "admin" }, process.env.TOKEN_SECRET, { expiresIn: '24h' });
+            request.post(
+                `${baseUrl}/api/auth/create-user`, {
+                body: JSON.stringify(data), method: 'POST',
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type' : 'application/json' }
+            }, (error, response, body) => {
+                expect(response.statusCode).toBe(400);
+                done();
+            });
+        });
     });
 });
