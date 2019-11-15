@@ -18,7 +18,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Postgresql Setup
-    - uses: harmon758/postgresql-action@v1
+      uses: harmon758/postgresql-action@v1
       with:
           posgresql version: 12
     - name: npm install, build, and test
