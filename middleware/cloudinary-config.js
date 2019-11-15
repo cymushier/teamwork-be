@@ -11,21 +11,30 @@ cloudinary.config({
  * Once file is uploaded, create `imageUrl` in body with the image URL from cloudinary.
  */
 module.exports = (req, res, next) => {
-    if (req.files.image.ws.bytesWritten > 0) {
-        cloudinary.uploader.upload(req.files.image.path, { tags: 'teamwork_be' })
-            .then(image => {
-                req.body.imageUrl = image.url;
-                next();
-            })
-            .catch(_error => {
-                res.status(400).json({
-                    status: "failed",
-                    data: {
-                        message: 'Uploading image failed'
-                    }
-                })
-            });
-    } else {
+    try {
+        if (req.files) {
+            const image = req.files.image;
+            if (image) {
+                cloudinary.uploader.upload(image.tempFilePath, { tags: 'teamwork_be' })
+                    .then(image => {
+                        req.body.imageUrl = image.url;
+                        next();
+                    }).catch(error => {
+                        console.log(error);
+                        res.status(400).json({
+                            status: "error",
+                            error: 'Uploading image failed'
+                        });
+                    });
+                return;
+            }
+        }
         next();
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            status: "error",
+            error: 'Uploading image failed. Internal Server Error'
+        });
     }
 };

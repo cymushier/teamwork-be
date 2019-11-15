@@ -1,25 +1,34 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
+const cors = require('cors');
+const morgan = require('morgan');
 
 const authRoutes = require('./routes/auth');
+const gifRoutes = require('./routes/gif');
 
 const app = express();
+
+// Enable files upload
+app.use(fileUpload({ createParentPath: true, useTempFiles : true, tempFileDir : '/tmp/uploads/' }));
 
 /**
  * Setup CORS headers
  */
-app.use((_req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  next();
-});
+app.use(cors());
 
 /**
- * Easily parse request data
+ * Parse request data
  */
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+/**
+ * Log pipeline
+ */
+app.use(morgan('dev'));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/gifs', gifRoutes);
 
 module.exports = app;

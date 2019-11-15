@@ -8,10 +8,8 @@ exports.createUser = (req, res) => {
             const { email, firstName, lastName, department, jobRole, address, userId } = req.body;
             if (!email || !firstName || !lastName || !jobRole) {
                 res.status(400).json({
-                    status: "failed",
-                    data: {
-                        message: "Mising required parameters. Try again."
-                    }
+                    status: "error",
+                    error: "Mising required parameters. Try again."
                 });
                 return;
             }
@@ -19,10 +17,8 @@ exports.createUser = (req, res) => {
                 if (result.rows) {
                     if (result.rows.length > 0 && result.rows[0].others > 0) {
                         res.status(400).json({
-                            status: "failed",
-                            data: {
-                                message: "Email address already exist. Try again."
-                            }
+                            status: "error",
+                            error: "Email address already exist. Try again."
                         });
                         return;
                     }
@@ -37,34 +33,29 @@ exports.createUser = (req, res) => {
                                 status: "success",
                                 data: {
                                     message: "User account successfully created",
+                                    token: "",
                                     userId: ""
                                 }
                             });
                         } else {
                             res.status(400).json({
-                                status: "failed",
-                                data: {
-                                    message: "Could not successfully create user. Try again."
-                                }
+                                status: "error",
+                                error: "Could not successfully create user. Try again."
                             });
                         }
                     });
             }, [email]);
         } catch (error) {
             res.status(500).json({
-                status: "failed",
-                data: {
-                    message: "Could not successfully create user"
-                }
+                status: "error",
+                error: "Could not successfully create user"
             });
         }
     }).catch(error => {
         console.log(`Bcyrpt Exception: ${error}`);
         res.status(500).json({
-            status: "failed",
-            data: {
-                message: "Internal server error"
-            }
+            status: "error",
+            error: "Internal server error"
         });
     });
 };
@@ -102,53 +93,41 @@ exports.login = (req, res) => {
                                 return;
                             } else {
                                 res.status(401).json({
-                                    status: "failed",
-                                    data: {
-                                        message: "Invalid login attempt. Try again."
-                                    }
+                                    status: "error",
+                                    error: "Invalid login attempt. Try again."
                                 });
                             }
                         }).catch(error => {
                             console.log(error);
                             res.status(500).json({
-                                status: "failed",
-                                data: {
-                                    message: "Could not successfully login user. Try again."
-                                }
+                                status: "error",
+                                error: "Could not successfully login user. Try again."
                             });
                         });
                     } else {
                         res.status(401).json({
-                            status: "failed",
-                            data: {
-                                message: "Invalid login attempt. Try again."
-                            }
+                            status: "error",
+                            error: "Invalid login attempt. Try again."
                         });
                     }
                 } else {
                     res.status(401).json({
-                        status: "failed",
-                        data: {
-                            message: "Invalid login attempt. Try again."
-                        }
+                        status: "error",
+                        error: "Invalid login attempt. Try again."
                     });
                 }
             } else {
                 res.status(401).json({
-                    status: "failed",
-                    data: {
-                        message: "Invalid login attempt. Try again."
-                    }
+                    status: "error",
+                    error: "Invalid login attempt. Try again."
                 });
             }
         }, [email]);
     } catch (error) {
         console.log(`Login Error: ${error}`);
         res.status(500).json({
-            status: "failed",
-            data: {
-                message: "Internal Server Error. Try again."
-            }
+            status: "error",
+            error: "Internal Server Error. Try again."
         });
     }
 }

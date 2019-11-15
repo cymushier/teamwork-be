@@ -5,7 +5,7 @@ module.exports = (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
     const role = decodedToken.jobRole;
-    if (role !== 'admin') {
+    if (role !== 'employee') {
       throw 'Permission Denied';
     } else {
       next();
