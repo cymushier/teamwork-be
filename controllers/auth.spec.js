@@ -48,4 +48,26 @@ describe("Auth Controller", () => {
             });
         });
     });
+
+    describe("login", () => {
+        it("Invalid Email and Password. Should Return 401", (done) => {
+            request.post(
+                `${baseUrl}/api/auth/login`,
+                { body: JSON.stringify({ email: "admin@example.coms", password: "invalidPass" }), headers: { 'Content-Type': 'application/json' } },
+                (error, response, body) => {
+                    expect(response.statusCode).toBe(401);
+                    done();
+                });
+        });
+
+        it("Valid Email and Invalid Password. Should Return 401", (done) => {
+            request.post(
+                `${baseUrl}/api/auth/login`,
+                { body: JSON.stringify({ email: "admin@example.com", password: "invalidPass" }), headers: { 'Content-Type': 'application/json' } },
+                (error, response, body) => {
+                    expect(response.statusCode).toBe(401);
+                    done();
+                });
+        });
+    });
 });
