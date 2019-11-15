@@ -1,0 +1,38 @@
+name: Teamwork BE CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [13.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Postgresql Setup
+      uses: harmon758/postgresql-action@v1
+      with:
+          postgresql version: 12
+          postgresql db: "teamwork-be"
+          postgresql user: "teamwork-be-admin"
+          postgresql password: "teamwork-be-admin-PassW9032T"
+    - name: npm install, build, and test
+      run: |
+        npm ci
+        npm run create
+        npm run build --if-present
+        npm test
+      env:
+        CI: true
+        TOKEN_SECRET: "QymhMGRf2}>NS;Bx&MbVC)"
+        DB_NAME: "teamwork-be"
+        DB_USER: "teamwork-be-admin"
+        DB_PASSWORD: "teamwork-be-admin-PassW9032T"
