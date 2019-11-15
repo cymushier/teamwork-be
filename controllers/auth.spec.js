@@ -14,8 +14,8 @@ describe("Auth Controller", () => {
     const baseUrl = 'http://localhost:3000';
 
     describe("create-user", () => {
+        // email: 'admin@example.com',  // Intentionally removed to fail
         const data = {
-            email: 'admin@example.com',
             firstName: 'Admin',
             lastName: 'One',
             department: 'IT',
