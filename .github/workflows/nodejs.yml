@@ -33,6 +33,8 @@ jobs:
       env:
         CI: true
         TOKEN_SECRET: "QymhMGRf2}>NS;Bx&MbVC)"
+        DB_HOST: "localhost"
+        DB_SSL: ""
         DB_NAME: "teamwork-be"
         DB_USER: "teamwork-be-admin"
         DB_PASSWORD: "teamwork-be-admin-PassW9032T"

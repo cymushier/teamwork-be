@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { executeInsert, execute } = require('../models/base-model');
 
 exports.createUser = (req, res) => {
@@ -67,3 +68,87 @@ exports.createUser = (req, res) => {
         });
     });
 };
+
+exports.login = (req, res) => {
+    try {
+        const email = req.body.email;
+        execute(`SELECT id, password, job_role, first_name, last_name, created_on FROM users WHERE email=$1 LIMIT 1;`, (result) => {
+            if (result.rows) {
+                if (result.rows.length > 0) {
+                    const userModel = result.rows[0];
+                    if (userModel) {
+                        bcrypt.compare(req.body.password, userModel.password).then(valid => {
+                            if (valid) {
+                                const tokenPayload = {
+                                    userId: userModel.id,
+                                    jobRole: userModel.job_role,
+                                    firstName: userModel.first_name,
+                                    lastName: userModel.last_name
+                                };
+                                const token = jwt.sign(tokenPayload, process.env.TOKEN_SECRET, { expiresIn: '4h' });
+
+                                res.status(200).json({
+                                    status: "success",
+                                    data: {
+                                        message: "Successfully logged in user",
+                                        userId: userModel.id,
+                                        token: token,
+                                        jobRole: userModel.job_role,
+                                        firstName: userModel.first_name,
+                                        lastName: userModel.last_name,
+                                        createdOn: userModel.created_on
+                                    }
+                                });
+                                return;
+                            } else {
+                                res.status(401).json({
+                                    status: "failed",
+                                    data: {
+                                        message: "Invalid login attempt. Try again."
+                                    }
+                                });
+                            }
+                        }).catch(error => {
+                            console.log(error);
+                            res.status(500).json({
+                                status: "failed",
+                                data: {
+                                    message: "Could not successfully login user. Try again."
+                                }
+                            });
+                        });
+                    } else {
+                        res.status(401).json({
+                            status: "failed",
+                            data: {
+                                message: "Invalid login attempt. Try again."
+                            }
+                        });
+                    }
+                } else {
+                    res.status(401).json({
+                        status: "failed",
+                        data: {
+                            message: "Invalid login attempt. Try again."
+                        }
+                    });
+                }
+            } else {
+                res.status(401).json({
+                    status: "failed",
+                    data: {
+                        message: "Invalid login attempt. Try again."
+                    }
+                });
+            }
+        }, [email]);
+    } catch (error) {
+        console.log(`Login Error: ${error}`);
+        res.status(500).json({
+            status: "failed",
+            data: {
+                message: "Internal Server Error. Try again."
+            }
+        });
+    }
+}
