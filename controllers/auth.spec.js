@@ -26,10 +26,13 @@ describe("Auth Controller", () => {
         }
 
         it("Unauthenticated. Should Return 401", (done) => {
-            request.post(`${baseUrl}/api/auth/create-user`, { body: JSON.stringify(data) }, (error, response, body) => {
-                expect(response.statusCode).toBe(401);
-                done();
-            });
+            request.post(
+                `${baseUrl}/api/auth/create-user`,
+                { body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } },
+                (error, response, body) => {
+                    expect(response.statusCode).toBe(401);
+                    done();
+                });
         });
 
         it("Authorized. Should Return 400", (done) => {
@@ -38,7 +41,7 @@ describe("Auth Controller", () => {
             request.post(
                 `${baseUrl}/api/auth/create-user`, {
                 body: JSON.stringify(data), method: 'POST',
-                headers: { Authorization: `Bearer ${token}`, 'Content-Type' : 'application/json' }
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
             }, (error, response, body) => {
                 expect(response.statusCode).toBe(400);
                 done();
