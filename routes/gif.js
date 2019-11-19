@@ -6,6 +6,6 @@ const cloudinary = require('../middleware/cloudinary-config');
 const auth = require('../middleware/auth');
 const authEmployee = require('../middleware/auth-employee');
 
-router.post('/', auth, cloudinary, gifController.createGif);
+router.post('/', auth, authEmployee, cloudinary, gifController.createGif);
 
 module.exports = router;

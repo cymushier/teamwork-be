@@ -19,9 +19,9 @@ exports.createGif = (req, res) => {
                     res.status(201).json({
                         status: "success",
                         data: {
-                            gifId: "",
+                            gifId: result.id,
                             message: "GIF image successfully posted",
-                            createdOn: "",
+                            createdOn: result.created_on,
                             title: title,
                             imageUrl: imageUrl
                         }
@@ -32,7 +32,7 @@ exports.createGif = (req, res) => {
                         error: "Could not successfully create GIF. Try again."
                     });
                 }
-            });
+            }, ['id', 'created_on']);
     } catch (error) {
         console.log(`Error: ${error}`);
         res.status(500).json({

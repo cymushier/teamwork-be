@@ -39,14 +39,31 @@ const execute = (query, callback, params = []) => {
  * @param columns The list of columns as we are affecting them.
  * @param values The list of values as we affecting them.
  * @param callback The function to be executed when results are retrieved.
+ * @param returnFields The fields we want to return after the row has been inserted.
+ * If provided, these fields will be returned to the callback function as an object.
  */
-const executeInsert = (table, columns, values, callback) => {
-  const createScript = `INSERT INTO ${table}(${columns.join(',')}) VALUES(${values.map((_val, index, _arr) => `$${index + 1}`)});`;
+const executeInsert = (table, columns, values, callback, returnFields = []) => {
+  let createScript = `INSERT INTO ${table}(${columns.join(',')}) VALUES(${values.map((_val, index, _arr) => `$${index + 1}`)})`;
+  let returns = '';
+  if (returnFields && returnFields.length > 0) {
+    returns += `RETURNING ${returnFields.join(',')}`;
+  }
+  createScript += ` ${returns};`;
+
   execute(createScript, (result) => {
-    if (result.rowCount) {
-      if (result.rowCount > 0) {
-        callback(true);
-        return;
+    if (returns !== '') {
+      if (result.rows) {
+        if (result.rows.length > 0 && result.rows[0]) {
+          callback(result.rows[0]);
+          return;
+        }
+      }
+    } else {
+      if (result.rowCount) {
+        if (result.rowCount > 0) {
+          callback(true);
+          return;
+        }
       }
     }
     callback(false);

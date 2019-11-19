@@ -15,17 +15,30 @@ module.exports = (req, res, next) => {
         if (req.files) {
             const image = req.files.image;
             if (image) {
-                cloudinary.uploader.upload(image.tempFilePath, { tags: 'teamwork_be' })
-                    .then(image => {
-                        req.body.imageUrl = image.url;
-                        next();
-                    }).catch(error => {
-                        console.log(error);
-                        res.status(400).json({
-                            status: "error",
-                            error: 'Uploading image failed'
-                        });
+                const supportedFiles = [
+                    'image/gif', 'image/png', 'image/jpg', 'image/jpeg', 'image/pipeg',
+                    'image/svg+xml', 'image/tiff', 'image/bmp'
+                ]
+                if (supportedFiles.find(p => p == image.mimetype)) {
+                    cloudinary.uploader.upload_stream({ tags: 'teamwork_be' }, (error, result) => {
+                        if (error) {
+                            console.log(error);
+                            res.status(400).json({
+                                status: "error",
+                                error: 'Uploading image failed'
+                            });
+                        } else {
+                            req.body.imageUrl = result.url;
+                            next();
+                        }
+                    }).end(image.data);
+                } else {
+                    console.log(`MIME Type: [${image.mimetype}] Not Found`);
+                    res.status(400).json({
+                        status: "error",
+                        error: 'Unsupported file type'
                     });
+                }
                 return;
             }
         }
